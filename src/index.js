@@ -3,6 +3,7 @@ import p from 'p5/lib/p5.min';
 const sketch = (p) => {
   let img;
   p.preload = () => {
+    // TODO: load in sample names with CSV to figure out how to traverse
     img = p.loadImage('../static/scantron.jpg');
   };
   p.setup = () => {
@@ -28,19 +29,11 @@ const sketch = (p) => {
     const bubbleDistance = {x: 15.03, y: 12.45};
     const bubbleSize = 7.3;
 
-    // TODO: skip blank spaces unless there is a blank
-    // TODO: if there is a blank fill in the blank
     p.push();
-
     p.translate(39.5, 79);
     p.fill(0);
     for (let i = 0; i < text.length; i++) {
       p.name(text[i].toLowerCase(), bubbleDistance, i, bubbleSize)();
-
-      // if (text[i] === ' ') {
-      //   console.log('space');
-      // } else {
-      // }
     }
     p.pop();
 
