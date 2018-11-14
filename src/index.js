@@ -37,7 +37,8 @@ const sketch = (p) => {
     }
     p.pop();
 
-    p.saveCanvas(text, 'jpg');
+    // TODO: once you have sample names figure out how to save multiples
+    // p.saveCanvas(text, 'jpg');
 
     // p.fillAll(bubbleDistance, bubbleSize);
   };
