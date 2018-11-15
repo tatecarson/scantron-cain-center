@@ -1,7 +1,8 @@
+// works best with chrome, no save dialogue
 import p from 'p5/lib/p5.min';
 
-// TODO: convert to canvas-sketch ith p5 in order to use the save feature
-// ex: https://github.com/mattdesl/canvas-sketch/blob/master/examples/animated-p5-instance.js
+// TODO: deal with special characters in name
+// ex: D'andre or Garcia-Rada
 
 const sketch = (p) => {
   let img;
@@ -13,30 +14,33 @@ const sketch = (p) => {
   };
   p.setup = () => {
     p.createCanvas(825, 625);
+    p.background();
 
-    // scantron background
+    // Choose range to save
+    document.getElementById('save').addEventListener('click', () => {
+      let low = document.getElementById('low').value;
+      let high = document.getElementById('high').value;
+      p.saveStudents(low, high);
+    });
+  };
+
+  p.saveStudents = (rangeL, rangeH) => {
+    let student;
+    for (let i = rangeL; i < rangeH; i++) {
+      student = p.getStudent()[i];
+      p.background();
+      p.drawStudent(student);
+      p.save(`${student}.jpg`);
+    }
+  };
+
+  p.background = () => {
     p.push();
     p.scale(0.25, 0.25);
     p.image(img, 0, 0);
     p.pop();
-
-    p.textSize(18);
-
-    // print any text to the name spaces on the scantron
-
-    let student = p.getStudent()[3];
-    p.drawStudent(student);
-
-    // still makes dialogue pop up
-    p.save(`${student}.jpg`);
-
-    // TODO: can saveCanvas be used without save as?
-    // p.getStudent().forEach(student => {
-    //   p.drawStudent(student);
-    //   p.save(student, 'jpg');
-    // });
   };
-
+  // TODO: log so you can see where it fails
   p.getStudent = () => {
     let student = [];
     sheet.getColumn('Last Name').forEach((x, i) => {
@@ -46,6 +50,8 @@ const sketch = (p) => {
   };
 
   p.drawStudent = name => {
+    p.textSize(18);
+
     for (let i = 0; i < name.length; i++) {
       p.push();
       p.translate(35, 66);
@@ -88,10 +94,10 @@ const sketch = (p) => {
       't': () => p.ellipse(d.x * index, d.y * 20, s),
       'u': () => p.ellipse(d.x * index, d.y * 21, s),
       'v': () => p.ellipse(d.x * index, d.y * 22, s),
-      'w': () => p.ellipse(d.x * index, d.y * 24, s),
-      'x': () => p.ellipse(d.x * index, d.y * 25, s),
-      'y': () => p.ellipse(d.x * index, d.y * 26, s),
-      'z': () => p.ellipse(d.x * index, d.y * 27, s)
+      'w': () => p.ellipse(d.x * index, d.y * 23, s),
+      'x': () => p.ellipse(d.x * index, d.y * 24, s),
+      'y': () => p.ellipse(d.x * index, d.y * 25, s),
+      'z': () => p.ellipse(d.x * index, d.y * 26, s)
     })[letter];
 
     return name(letter)();
