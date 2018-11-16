@@ -1,13 +1,10 @@
 // works best with chrome, no save dialogue
 import p from 'p5/lib/p5.min';
 
-// TODO: deal with special characters in name
-// ex: D'andre or Garcia-Rada
-
 const sketch = (p) => {
   let img;
   let sheet;
-
+  let delay;
   p.preload = () => {
     sheet = p.loadTable('../static/roster.csv', 'csv', 'header');
     img = p.loadImage('../static/scantron.jpg');
@@ -20,18 +17,29 @@ const sketch = (p) => {
     document.getElementById('save').addEventListener('click', () => {
       let low = document.getElementById('low').value;
       let high = document.getElementById('high').value;
+      console.log(`low: ${low}, high: ${high}`);
       p.saveStudents(low, high);
     });
+
+    document.getElementById('delay').addEventListener('click', () => {
+      clearTimeout(delay);
+    });
+    console.log(p.getStudent().length);
   };
 
   p.saveStudents = (rangeL, rangeH) => {
     let student;
     for (let i = rangeL; i < rangeH; i++) {
-      student = p.getStudent()[i];
-      p.background();
-      p.drawStudent(student);
-      p.save(`${student}.jpg`);
+      delay = setTimeout(() => {
+        student = p.getStudent()[i];
+        p.background();
+        p.drawStudent(student);
+        console.log(`saving students: ${student}`);
+
+        p.save(`${student}.jpg`);
+      }, 1000);
     }
+    console.log(delay);
   };
 
   p.background = () => {
@@ -40,7 +48,7 @@ const sketch = (p) => {
     p.image(img, 0, 0);
     p.pop();
   };
-  // TODO: log so you can see where it fails
+
   p.getStudent = () => {
     let student = [];
     sheet.getColumn('Last Name').forEach((x, i) => {
@@ -52,6 +60,7 @@ const sketch = (p) => {
   p.drawStudent = name => {
     p.textSize(18);
 
+    // Draw text and bubbles
     for (let i = 0; i < name.length; i++) {
       p.push();
       p.translate(35, 66);
@@ -70,13 +79,20 @@ const sketch = (p) => {
     const d = {x: 15.03, y: 12.45};
     const s = 7.3;
 
+    // TODO: add regexp that rejects handles all other characters
     const name = letter => ({
-      ' ': () => p.ellipse(d.x * index, d.y * 0, s),
+      ' ': () => p.ellipse(d.x * index, d.y * 0, s), // handle space
+      "'": () => p.ellipse(d.x * index, d.y * 0, s), // Capturing a '
+      '’': () => p.ellipse(d.x * index, d.y * 0, s), // Capturing a ’
+      '-': () => p.ellipse(d.x * index, d.y * 0, s), // treat '-' as a blank
+      '.': () => p.ellipse(d.x * index, d.y * 0, s), // treat '.' as a blank
+      ',': () => p.ellipse(d.x * index, d.y * 0, s), // treat '.' as a blank
       'a': () => p.ellipse(d.x * index, d.y * 1, s),
       'b': () => p.ellipse(d.x * index, d.y * 2, s),
       'c': () => p.ellipse(d.x * index, d.y * 3, s),
       'd': () => p.ellipse(d.x * index, d.y * 4, s),
       'e': () => p.ellipse(d.x * index, d.y * 5, s),
+      'é': () => p.ellipse(d.x * index, d.y * 5, s), // convert to normal e
       'f': () => p.ellipse(d.x * index, d.y * 6, s),
       'g': () => p.ellipse(d.x * index, d.y * 7, s),
       'h': () => p.ellipse(d.x * index, d.y * 8, s),
