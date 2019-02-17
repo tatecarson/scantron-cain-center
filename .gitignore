@@ -2,3 +2,6 @@ dist
 node_modules
 finished-scantrons
 static/roster.csv
+static/Completed Scantron.pdf
+static/Sample Roster.xlsx
+static/Scantron Template.pdf
