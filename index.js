@@ -4,9 +4,18 @@
 // TODO: instead of saving, make them print
 // TODO: maybe we need to save to pdf then print?
 
-// TODO: trying to print on scantron with scaling, try 46% or 49.999 next, printer overheating now
-
 // TODO: allow the to upload csv file so they can change what gets printed
+
+/*
+  Workflow:
+
+  - Use chrome, change download settings to not ask to save each file before downloading
+  - set the loadTable('path to csv'), make sure you only include ones you want to print
+  - once the csv is loaded the page will say "done loading"
+  - then you can click "download images" and the images will be saved to your downloads folder
+  - depending on how many images there are it might take a while
+  - it might be best to do it while not using the machine
+*/
 
 let img;
 let sheet;
@@ -14,38 +23,42 @@ let delay;
 let load;
 let download;
 let input;
+let loadSheet;
+let table;
 
 preload = () => {
-  // sheet = loadTable('../static/roster.csv', 'csv', 'header');
   img = loadImage('../static/scantron.jpg');
 
+  // NOTE: enter the csv path below
+  sheet = loadTable('../static/roster-small.csv', 'csv', 'header', () => createElement('p', "done loading"));
+
+  // input = createFileInput(handleFile);
+  // input.position(10, 10);
+
+  // function handleFile(file) {
+  //   print(file);
+  //   // TODO: getting strange error when loading
+  //   // table = file;
+  //   sheet = loadTable(file.data, 'csv', 'header', () => createElement('p', "done loading"));
+  // }
+
 };
+
 setup = () => {
-  createCanvas(3300 / 2, 2550 / 2);
+  createCanvas(3300, 2550);
 
-  // load = createButton('load csv')
-  // load.position(10, 10);
-  // load.mousePressed(() => {
-  //   sheet = loadTable('../static/roster.csv', 'csv', 'header', () => createElement('p', "done loading"));
-  //   
+  // loadSheet = createButton('Load Table')
+  // loadSheet.position(400, 10);
+  // loadSheet.mousePressed(() => {
+  //   sheet = loadTable(table.data, 'csv', 'header', () => createElement('p', "done loading"));
   // })
-
-  input = createFileInput(handleFile);
-  input.position(10, 10);
-
-  function handleFile(file) {
-    print(file);
-    // TODO: getting strange error when loading
-    sheet = loadTable(file.name, 'csv', 'header', () => createElement('p', "done loading"));
-  }
-
 
   download = createButton('download images')
   download.position(180, 10);
   download.mousePressed(() => {
     const students = [];
     //sheet.getColumn('Last Name').length
-    for (let i = 0; i < 1; i++) {
+    for (let i = 0; i < sheet.getColumn('Last Name').length; i++) {
       setTimeout(() => {
         students[i] = new Student();
 
@@ -68,13 +81,13 @@ class Student {
     this.rangeH = rangeH;
   }
 
-  background() {
-    push();
-    scale(0.5, 0.5);
+  // background() {
+  //   push();
+  //   // scale(0.5, 0.5);
 
-    image(img, 0, 0);
-    pop();
-  }
+  //   image(img, 0, 0);
+  //   pop();
+  // }
 
   getStudent() {
     let student = [];
@@ -102,7 +115,9 @@ class Student {
     this.division = division;
     this.schoolCode = schoolCode;
     this.testCode = testCode;
-    this.background();
+
+    // draw a while bg, when saved as png it is transparent
+    background(255, 255, 255);
     textSize(18);
 
     // Draw text and bubbles
@@ -110,7 +125,7 @@ class Student {
 
       // scale everything
       push()
-      scale(1.999, 1.999);
+      scale(4, 4);
 
       //Name
       push();
@@ -161,7 +176,7 @@ class Student {
 
       if (i < this.testCode.length) {
         push()
-        translate(290 + 6, 465 + 13)
+        translate(290 + 5, 465 + 13)
         fill(0)
         this.getNumberBubbles(this.testCode[i], i);
         pop()
